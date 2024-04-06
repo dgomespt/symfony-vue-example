@@ -15,6 +15,37 @@ readonly class Server implements JsonSerializable
         private string $price){
     }
 
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getModel(): string
+    {
+        return $this->model;
+    }
+
+    public function getRam(): string
+    {
+        return $this->ram;
+    }
+
+    public function getHdd(): string
+    {
+        return $this->hdd;
+    }
+
+    public function getLocation(): string
+    {
+        return $this->location;
+    }
+
+    public function getPrice(): string
+    {
+        return $this->price;
+    }
+
+
     public function jsonSerialize(): array
     {
         return [

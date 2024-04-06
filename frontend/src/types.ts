@@ -1,4 +1,5 @@
-interface Server {
+
+export interface Server {
   id: number
   model: string
   ram: string
@@ -7,12 +8,12 @@ interface Server {
   price: string
 }
 
-interface Meta {
-  totalItems: number
+export type Meta = {
+  totalItems?: number
   itemsPerPage: number
   currentPage: number
 }
 
-type SortState = {
+export type SortStates = {
   [key: string]: number
 }

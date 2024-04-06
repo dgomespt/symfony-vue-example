@@ -3,12 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Server;
+use App\Interface\RepositoryInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-readonly class ServerRepository
+readonly class ServerRepository implements RepositoryInterface
 {
 
     public function __construct(

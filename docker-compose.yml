@@ -23,9 +23,12 @@ services:
         ports:
             - '${REDIS_PORT-6379}:6379'
 
-    node:
-        image: 'node:20-buster'
-        working_dir: /home/node/app
-        command: "npm i && npm run build"
+    vue:
+        build:
+            context: ./
+            dockerfile: ./phpdocker/node/Dockerfile
+        ports:
+            - "5173:5173"
+            - "8081:8080"
         volumes:
-            - "./frontend:/home/node/app"
+            - "./frontend:/usr/src/app"

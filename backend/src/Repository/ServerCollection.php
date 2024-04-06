@@ -3,55 +3,52 @@
 namespace App\Repository;
 
 use App\Entity\Server;
-use ArrayIterator;
-use Closure;
-use Countable;
-use IteratorAggregate;
-use Traversable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Exception;
 
-class ServerCollection implements IteratorAggregate, Countable
+class ServerCollection extends ArrayCollection
 {
-
-    public function __construct(
-        protected array $servers = []
-    )
+    public function add(mixed $element): void
     {
+        if (!$element instanceof Server) {
+            throw new \InvalidArgumentException('Element must be instance of Server');
+        }
 
+        parent::add($element);
     }
 
-    protected function createFromArray(array $servers): ServerCollection
+    /**
+     * @throws Exception
+     */
+    public function sort(string $name, $direction = 'asc'): static
     {
-        return new static($servers);
+        $i = $this->getIterator();
+        $i->uasort(function ($a, $b) use ($name, $direction) {
+
+            $val1 = $a->{'get'.ucfirst($name)}();
+            $val2 = $b->{'get'.ucfirst($name)}();
+
+            $val1 = $this->parseSortableValue($val1, $name);
+            $val2 = $this->parseSortableValue($val2, $name);
+
+            if ($val1 == $val2) {
+                return 0;
+            }
+            return ($val1 < $val2) ? -1 : 1;
+        });
+
+        $results = iterator_to_array($i);
+        return new static($direction === 'asc' ? $results : array_reverse($results));
     }
 
-    public function add(Server $server): void
+    public function parseSortableValue(string $value, string $name): mixed
     {
-        $this->servers[] = $server;
+        return match($name) {
+            'ram' => intval(trim($value)),
+            'price' => floatval(preg_replace('/[^0-9.]/', '', $value)),
+            default => trim($value)
+        };
     }
 
-    public function getIterator(): Traversable
-    {
-        return new ArrayIterator($this->servers);
-    }
-
-    public function count(): int
-    {
-        return count($this->servers);
-    }
-
-    public function filter(Closure $closure): ServerCollection
-    {
-        return $this->createFromArray(array_filter($this->servers, $closure));
-    }
-
-    public function take(int $count, int $offset = 0): ServerCollection
-    {
-        return $this->createFromArray(array_slice($this->servers, $offset, $count));
-    }
-
-    public function toArray(): array
-    {
-        return array_map(fn(Server $server) => $server->jsonSerialize(), $this->servers);
-    }
 
 }

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { Meta, Server, SortStates} from '../types'
-import { ref, onMounted } from 'vue'
+import type { Meta, Server, SortStates } from '../types';
+import { ref } from 'vue'
 
-const apiUrl = 'http://localhost:44000/servers'
+const apiUrl = 'http://localhost/servers'
 
 const apiServerPresent = ref<boolean>(false)
 
-const meta: Meta = ref({
-  itemsPerPage: 500
+const meta = ref<Meta>({
+  'itemsPerPage' : 10,
+  'currentPage' : 1
 })
 
 const sortStates = ref<SortStates>({
@@ -19,9 +20,9 @@ const sortStates = ref<SortStates>({
 })
 
 const filterValues = ref({})
-const servers = ref([])
+const servers = ref<Server[]>([])
 
-const beforeFiltering = ref([])
+const beforeFiltering = ref<Server[]>([])
 
 getPage().then((data) => {
   apiServerPresent.value=true
@@ -33,9 +34,9 @@ getPage().then((data) => {
     location: getFilterValues('location')
   }
   beforeFiltering.value = data
-}).catch((error) => apiServerPresent.value=false)
+}).catch(() => apiServerPresent.value=false)
 
-function fetchServers(page): Promise<any> {
+function fetchServers(page: number = 1): Promise<any> {
   return axios.get(apiUrl + '?page=' + page + '&itemsPerPage=' + meta.value.itemsPerPage, {
     headers: {
       Accept: 'application/vnd.api+json'
@@ -50,7 +51,8 @@ function sort(field: string, parser?: any): void {
     sortStates.value[field] = -sortStates.value[field]
   }
 
-  servers.value.sort((a, b) => {
+  servers.value.sort((a: Server, b: Server) => {
+    
     let val1 = a[field]
     let val2 = b[field]
 
