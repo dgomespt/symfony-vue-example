@@ -56,15 +56,15 @@ const filterValues = {
     }
 }
 
-function handleRamSelection(event: Event) {
+function handleRamSelection(target: HTMLInputElement) {
 
-    const checkboxValue = event.target.value;
+    const checkboxValue = target.value;
 
-    if(event.target.value=='any'){
+    if(target.value=='any'){
         appliedFilters.value.ram = ['any'];
     }else{
 
-        if(event.target.checked){
+        if(target.checked){
 
             if(checkboxValue!='any'){
                 const index = appliedFilters.value.ram.indexOf('any');
@@ -99,7 +99,7 @@ function filter(){
         <div>
             <label>RAM: </label>
                 <label v-for="(option, index) in filterValues.ram" :key="index">
-                <input type="checkbox" :value="index" v-model="appliedFilters.ram" @change="handleRamSelection"/> {{ option }}
+                <input type="checkbox" :value="index" v-model="appliedFilters.ram" @change="handleRamSelection($event.target as HTMLInputElement)"/> {{ option }}
             </label>
         </div>
         <div>

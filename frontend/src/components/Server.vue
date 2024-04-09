@@ -34,8 +34,8 @@ loadPage(currentRequest.value);
 function fetchServers(requestParams: RequestParams): Promise<any> {
 
   const url: URL = new URL(apiUrl);
-  url.searchParams.append('page', requestParams.page.toString());
-  url.searchParams.append('itemsPerPage', requestParams.itemsPerPage.toString());
+  url.searchParams.append('page', requestParams?.page.toString());
+  url.searchParams.append('itemsPerPage', requestParams?.itemsPerPage?.toString() || '10');
 
   if (requestParams.filters != null) {
       for(const [key, value] of Object.entries(requestParams.filters)){
@@ -46,7 +46,7 @@ function fetchServers(requestParams: RequestParams): Promise<any> {
 
   if (requestParams.order) {
     Object.keys(requestParams.order).forEach((key) => {
-      url.searchParams.append('order[' + key + ']', requestParams.order[key]);
+      url.searchParams.append('order[' + key + ']', requestParams.order?.[key] || 'asc');
     });
   }
 
@@ -78,7 +78,7 @@ function applyFilters(appliedFilters: any): void {
   r.filters = {}
 
   for(const [key, value] of Object.entries(appliedFilters)){
-    r.filters[key] = value
+    r.filters[key] = value as string
   }
 
   console.log('filters',r.filters);
@@ -115,10 +115,10 @@ async function getPage(requestParams: RequestParams): Promise<Server[]> {
       <thead>
         <tr>
           <th @click="order('model')">Model</th>
-          <th @click="order('ram', ramParser)">RAM</th>
+          <th @click="order('ram')">RAM</th>
           <th @click="order('hdd')">HDD</th>
           <th @click="order('location')">Location</th>
-          <th @click="order('price', priceParser)">Price</th>
+          <th @click="order('price')">Price</th>
         </tr>
       </thead>
       <tbody>
