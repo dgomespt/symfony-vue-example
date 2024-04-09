@@ -10,9 +10,9 @@ readonly class Server implements JsonSerializable
         private string $id,
         private string $model,
         private string $ram,
-        private string $hdd,
+        private Hdd $hdd,
         private string $location,
-        private string $price){
+        private Price $price){
     }
 
     public function getId(): string
@@ -30,7 +30,7 @@ readonly class Server implements JsonSerializable
         return $this->ram;
     }
 
-    public function getHdd(): string
+    public function getHdd(): Hdd
     {
         return $this->hdd;
     }
@@ -40,7 +40,7 @@ readonly class Server implements JsonSerializable
         return $this->location;
     }
 
-    public function getPrice(): string
+    public function getPrice(): Price
     {
         return $this->price;
     }
@@ -48,13 +48,30 @@ readonly class Server implements JsonSerializable
 
     public function jsonSerialize(): array
     {
+        return $this->toArray();
+    }
+
+    protected function getHddValue(): string{
+
+        preg_match('/(\d+)x(\d+)(\D{2})/', $this->hdd, $matches);
+
+        if($matches){
+            $multiplier = $matches[3] === 'TB' ? 1000 : 1;
+            return intval($matches[1]) * intval($matches[2]) * $multiplier;
+        }
+
+        return $this->hdd;
+    }
+
+    public function toArray(): array
+    {
         return [
             'id' => $this->id,
             'model' => $this->model,
             'ram' => $this->ram,
-            'hdd' => $this->hdd,
+            'hdd' => $this->hdd->toString(),
             'location' => $this->location,
-            'price' => $this->price
+            'price' => $this->price->toString()
         ];
     }
 }

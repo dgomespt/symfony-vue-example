@@ -9,11 +9,16 @@ export interface Server {
 }
 
 export type Meta = {
-  totalItems?: number
-  itemsPerPage: number
-  currentPage: number
+  [key: string]: string
 }
 
-export type SortStates = {
-  [key: string]: number
+export type RequestParams = {
+  page: number
+  itemsPerPage?: number,
+  filters?: {
+    [key: string]: string
+  },
+  order?: {
+    [key: string]: string
+  }
 }

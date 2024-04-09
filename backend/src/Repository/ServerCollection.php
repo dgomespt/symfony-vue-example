@@ -2,16 +2,28 @@
 
 namespace App\Repository;
 
+use App\Comparator\ServerComparator;
+use App\Converter\HddSizeConverter;
 use App\Entity\Server;
 use App\Error\InvalidFilterFieldError;
 use App\Error\InvalidOrderDirectionError;
 use App\Error\InvalidOrderFieldError;
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;
 use InvalidArgumentException;
 
 class ServerCollection extends ArrayCollection
 {
+
+    private ServerComparator $comparator;
+
+    public function __construct(array $elements = []){
+        parent::__construct($elements);
+
+        $this->comparator = new ServerComparator();
+    }
+
     public function add(mixed $element): void
     {
         if (!$element instanceof Server) {
@@ -27,10 +39,10 @@ class ServerCollection extends ArrayCollection
      */
     public function order(string $name, $direction = 'asc'): static
     {
-        match($direction){
-            'asc', 'desc' => null,
-            default => throw new InvalidOrderDirectionError("Invalid order direction: $direction")
-        };
+
+        if(!in_array($direction, ['asc', 'desc'])){
+            throw new InvalidOrderDirectionError("Invalid order direction: $direction");
+        }
 
         $getter = 'get'.ucfirst($name);
         if(!method_exists(Server::class, $getter)){
@@ -38,16 +50,7 @@ class ServerCollection extends ArrayCollection
         }
 
         $i = $this->getIterator();
-        $i->uasort(function ($a, $b) use ($getter,$name, $direction) {
-
-            $val1 = $this->parseSortableValue($a->$getter(), $name);
-            $val2 = $this->parseSortableValue($b->$getter(), $name);
-
-            if ($val1 == $val2) {
-                return 0;
-            }
-            return ($val1 < $val2) ? -1 : 1;
-        });
+        $i->uasort(fn($a, $b) => $this->comparator->compare($a, $b)[$name]);
 
         $results = iterator_to_array($i);
         return new static($direction === 'asc' ? $results : array_reverse($results));
@@ -63,26 +66,39 @@ class ServerCollection extends ArrayCollection
         $allServers = $this->createFrom($this->getIterator()->getArrayCopy());
 
         foreach($filters as $name => $value){
-            $getter = 'get'.ucfirst($name);
-            if(method_exists(Server::class, $getter)){
-                $allServers = $allServers->filter(function($server) use ($getter, $name, $value) {
-                    return $server->$getter() == $value;
-                });
-            }else{
-                throw new InvalidFilterFieldError("Trying to filter by unknown property: $name");
-            }
+
+            if($value == 'any') continue;
+
+            $allServers = match (strtolower($name)) {
+                'ram' => $allServers->filter($this->filterByRam($value)),
+                'storage' => $allServers->filter($this->filterByStorage($value)),
+                'location' => $allServers->filter($this->filterByLocation($value)),
+                default => throw new InvalidFilterFieldError("Trying to filter by unknown property: $name")
+            };
         }
         return $allServers;
     }
 
-    protected function parseSortableValue(string $value, string $name): string|int|float
+    public function filterByRam(string $value): Closure
     {
-        return match($name) {
-            'ram' => intval(trim($value)),
-            'price' => floatval(preg_replace('/[^0-9.]/', '', $value)),
-            default => trim($value)
+        $values =  array_unique(explode(',', $value));
+        return function(Server $server) use ($values) {
+            return in_array($server->getRam(), $values);
         };
     }
 
+    public function filterByStorage( $value): Closure
+    {
+        return function(Server $server) use ($value) {
+            return $server->getHdd()->getTotalCapacityInGb() == $value;
+        };
+    }
+
+    public function filterByLocation( $value): Closure
+    {
+        return function(Server $server) use ($value) {
+            return strpos($server->getLocation(), $value);
+        };
+    }
 
 }

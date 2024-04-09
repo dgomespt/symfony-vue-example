@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Hdd;
+use App\Entity\Price;
 use App\Entity\Server;
 use App\Interface\RepositoryInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -20,15 +22,31 @@ readonly class ServerRepository implements RepositoryInterface
     protected function loadFromFile(): ServerCollection
     {
         $xls = IOFactory::load('/application/data/LeaseWeb_servers_filters_assignment.xlsx');
-
         $xls->setActiveSheetIndex(0);
         $rows = $xls->getActiveSheet()->toArray();
 
+        $headers = [];
         $servers = new ServerCollection();
-        array_shift($rows);
 
         foreach($rows as $idx => $row) {
-            $servers->add(new Server(++$idx,...$row));
+
+            if($idx === 0){
+                $headers = array_map(fn($row)=> strtolower($row), array_splice($row, 0, 5));
+                continue;
+            }
+
+            $row = array_combine(array_values($headers), array_splice($row, 0, count($headers)));
+
+            $serverObj = new Server(
+                $idx,
+                $row['model'],
+                $row['ram'],
+                Hdd::fromString($row['hdd']),
+                $row['location'],
+                Price::fromString($row['price'])
+            );
+
+            $servers->add($serverObj);
         }
 
         return $servers;

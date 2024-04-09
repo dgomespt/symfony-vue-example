@@ -33,9 +33,9 @@ class ServersController extends AbstractController
                 $request->get('filters', [])
                 , $request->get('order'));
 
-            $response = new JsonResponse($response->toArray());
+            return new JsonResponse($response->toArray());
 
-            return $response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
+            //return $response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
         }
         catch(Error $e){
             return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);

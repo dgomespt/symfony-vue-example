@@ -21,7 +21,7 @@ readonly class GetServersUseCase
      * @param int $page
      * @param int $itemsPerPage
      * @param array $filters
-     * @param array $order
+     * @param array|null $order
      * @return GetServersResponse
      * @throws Exception
      */
@@ -34,7 +34,7 @@ readonly class GetServersUseCase
 
         $allServers = $allServers->applyFilters($filters);
 
-        if(null !== $order){
+        if (null !== $order) {
             $order = array_slice($order, 0, 1);
             $allServers = $allServers->order(key($order), $order[key($order)]);
         }
@@ -45,8 +45,6 @@ readonly class GetServersUseCase
             new Meta($page,
                 $servers->count(),
                 $allServers->count()
-            ), $servers->toArray());
-
-
+            ), array_values($servers->toArray()));
     }
 }

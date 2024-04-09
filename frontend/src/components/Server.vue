@@ -1,104 +1,99 @@
 <script setup lang="ts">
 import axios from 'axios'
-import type { Meta, Server, SortStates } from '../types';
+import type { Meta, RequestParams, Server } from '../types';
 import { ref } from 'vue'
 
-const apiUrl = 'http://localhost/servers'
+import Filters from './Filters.vue'
 
+const apiUrl = 'http://localhost/servers'
 const apiServerPresent = ref<boolean>(false)
 
-const meta = ref<Meta>({
-  'itemsPerPage' : 10,
-  'currentPage' : 1
+const currentRequest = ref<RequestParams>({
+  'page': 1,
+  'itemsPerPage': 10
 })
 
-const sortStates = ref<SortStates>({
-  'model': 1,
-  'ram': 1,
-  'hdd': 1,
-  'location': 1
-})
-
-const filterValues = ref({})
+const meta = ref<Meta>({})
 const servers = ref<Server[]>([])
 
-const beforeFiltering = ref<Server[]>([])
+function loadPage(request: RequestParams){
 
-getPage().then((data) => {
-  apiServerPresent.value=true
-  servers.value = data
-  filterValues.value = {
-    model: getFilterValues('model'),
-    ram: getFilterValues('ram'),
-    hdd: getFilterValues('hdd'),
-    location: getFilterValues('location')
-  }
-  beforeFiltering.value = data
-}).catch(() => apiServerPresent.value=false)
-
-function fetchServers(page: number = 1): Promise<any> {
-  return axios.get(apiUrl + '?page=' + page + '&itemsPerPage=' + meta.value.itemsPerPage, {
-    headers: {
-      Accept: 'application/vnd.api+json'
-    }
+    getPage(request).then((data) => {
+      apiServerPresent.value=true
+      servers.value = data
+  }).catch((error) => {
+    console.error(error)
+    apiServerPresent.value=false
   })
+
+};
+
+loadPage(currentRequest.value);
+
+
+function fetchServers(requestParams: RequestParams): Promise<any> {
+
+  const url: URL = new URL(apiUrl);
+  url.searchParams.append('page', requestParams.page.toString());
+  url.searchParams.append('itemsPerPage', requestParams.itemsPerPage.toString());
+
+  if (requestParams.filters != null) {
+      for(const [key, value] of Object.entries(requestParams.filters)){
+      url.searchParams.append('filters[' + key + ']', value);
+    }
+  }
+  
+
+  if (requestParams.order) {
+    Object.keys(requestParams.order).forEach((key) => {
+      url.searchParams.append('order[' + key + ']', requestParams.order[key]);
+    });
+  }
+
+  return axios.get(url.href)
 }
 
-function sort(field: string, parser?: any): void {
-  if (sortStates.value[field] === undefined) {
-    sortStates.value[field] = 1
+function order(field: string): void {
+
+  let r = currentRequest.value;
+
+  if (r.order) {
+    r.order = {
+      [field]: r.order[field] === 'asc' ? 'desc' : 'asc'
+    };
   } else {
-    sortStates.value[field] = -sortStates.value[field]
+    r.order = {
+      [field]: 'asc'
+    };
   }
 
-  servers.value.sort((a: Server, b: Server) => {
-    
-    let val1 = a[field]
-    let val2 = b[field]
+  console.info(r);
+  loadPage(r);
 
-    if (parser) {
-      val1 = parser(val1)
-      val2 = parser(val2)
+}
+
+function applyFilters(appliedFilters: any): void {
+
+  let r = currentRequest.value;
+  r.filters = {}
+
+  for(const [key, value] of Object.entries(appliedFilters)){
+    r.filters[key] = value
+  }
+
+  console.log('filters',r.filters);
+  
+  loadPage(r)
+}
+
+
+async function getPage(requestParams: RequestParams): Promise<Server[]> {
+    const response = await fetchServers(requestParams)
+
+    if(response.status !== 200){
+      throw new Error(response.statusText)
     }
 
-    return val1 > val2 ? sortStates.value[field] : -sortStates.value[field]
-  })
-}
-
-function getFilterValues(field: string) {
-  const unique = new Set()
-
-  servers.value.forEach((server) => {
-    unique.add(server[field])
-  })
-
-  return Array.from(unique).sort()
-}
-
-function filterByValue(field: string, event: Event) {
-  servers.value = beforeFiltering.value
-  if (event.target.value === 'all') {
-    return
-  }
-  servers.value = servers.value.filter((server) => server[field] === event.target.value)
-}
-
-function priceParser(price: string) {
-  return parseFloat(price.replace(/€/g, ''))
-}
-
-function ramParser(ram: string) {
-  try {
-    return parseInt(ram.match(/\d+/g)[0])
-  }
-  catch (error) {
-    return ram;
-  }
-
-}
-
-async function getPage(page: number = 1): Promise<Server[]> {
-    const response = await fetchServers(page)
     meta.value = response.data.meta
     const results = response.data.data
     const servers = results.map((server: any) => ({
@@ -115,40 +110,15 @@ async function getPage(page: number = 1): Promise<Server[]> {
 
 <template>
   <div>
+    <Filters @filtersChanged="applyFilters"/>
     <table v-if="apiServerPresent">
       <thead>
         <tr>
-          <th @click="sort('model')">Model</th>
-          <th @click="sort('ram', ramParser)">RAM</th>
-          <th @click="sort('hdd')">HDD</th>
-          <th @click="sort('location')">Location</th>
-          <th @click="sort('price', priceParser)">Price</th>
-        </tr>
-        <tr>
-          <th>
-            <select @change="filterByValue('model', $event)">
-              <option value="all"></option>
-              <option v-for="value in filterValues.model" :key="value">{{ value }}</option>
-            </select>
-          </th>
-          <th>
-            <select @change="filterByValue('ram', $event)">
-              <option value="all"></option>
-              <option v-for="value in filterValues.ram" :key="value">{{ value }}</option>
-            </select>
-          </th>
-          <th>
-            <select @change="filterByValue('hdd', $event)">
-              <option value="all"></option>
-              <option v-for="value in filterValues.hdd" :key="value">{{ value }}</option>
-            </select>
-          </th>
-          <th>
-            <select @change="filterByValue('location', $event)">
-              <option value="all"></option>
-              <option v-for="value in filterValues.location" :key="value">{{ value }}</option>
-            </select>
-          </th>
+          <th @click="order('model')">Model</th>
+          <th @click="order('ram', ramParser)">RAM</th>
+          <th @click="order('hdd')">HDD</th>
+          <th @click="order('location')">Location</th>
+          <th @click="order('price', priceParser)">Price</th>
         </tr>
       </thead>
       <tbody>
@@ -161,7 +131,9 @@ async function getPage(page: number = 1): Promise<Server[]> {
         </tr>
       </tbody>
       <tfoot>
-        <td colspan="5">Showing {{ servers.length }} of {{ meta.totalItems || 0 }} servers</td>
+        <tr>
+          <td colspan="5">Showing {{ servers.length }} of {{ meta.total || servers.length }} servers</td>
+        </tr>
       </tfoot>
     </table>
     <div v-else>
