@@ -26,6 +26,8 @@ services:
             - '${REDIS_PORT-6379}:6379'
 
     vue:
+        profiles:
+        - donotstart
         build:
             context: ./
             dockerfile: ./phpdocker/node/Dockerfile

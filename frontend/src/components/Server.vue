@@ -67,7 +67,6 @@ function order(field: string): void {
     };
   }
 
-  console.info(r);
   loadPage(r);
 
 }
@@ -80,8 +79,6 @@ function applyFilters(appliedFilters: any): void {
   for(const [key, value] of Object.entries(appliedFilters)){
     r.filters[key] = value as string
   }
-
-  console.log('filters',r.filters);
   
   loadPage(r)
 }
