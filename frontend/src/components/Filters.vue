@@ -93,7 +93,8 @@ function filter(){
 </script>
 
 <template>
-    <form>
+    <div class="border-2 mb-5 p-5 align-top">
+        <form>
         <div>
             <label for="storage">Storage: </label>
             <select v-model="appliedFilters.storage" @change="filter">
@@ -119,4 +120,6 @@ function filter(){
             </select>
         </div>
     </form>
+    </div>
+    
 </template>

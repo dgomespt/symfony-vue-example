@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import axios from 'axios'
 import type { Meta, RequestParams, Server } from '../types';
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import Filters from './Filters.vue'
 import Pagination from './Pagination.vue'
+import Compare from './Compare.vue'
 
-const apiUrl = 'http://localhost/servers'
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/16/solid'
+
+const apiUrl = (import.meta.env?.API_BASE_URL || 'http://localhost') + '/servers'
+
 const apiServerPresent = ref<boolean>(false)
 
 const currentRequest = ref<RequestParams>({
@@ -84,6 +88,8 @@ function applyFilters(appliedFilters: any): void {
   loadPage(r)
 }
 
+const selectedServers = ref<Server[]>([])
+
 
 async function getPage(requestParams: RequestParams): Promise<Server[]> {
     const response = await fetchServers(requestParams)
@@ -102,55 +108,66 @@ async function getPage(requestParams: RequestParams): Promise<Server[]> {
       location: server.location,
       price: server.price
     }))
+
     return servers
 }
 
 function requestPage(page: number){
 
-  console.log(page);
   const r = currentRequest.value;
   r.page = page;
   loadPage(r)
 }
 
+
+watch<Server[]>(selectedServers, async (servers) => {
+  
+  if(servers.length > 2){
+    selectedServers.value.splice(0,servers.length-2);
+  }
+
+});
+
 </script>
 
 <template>
-  <div>
+  <div class="width-full flex flex-col items-center justify-center align-top">
     <Filters @filtersChanged="applyFilters"/>
-    <table v-if="apiServerPresent">
+    <Pagination 
+      @changePage="requestPage"
+      v-model="meta"
+    />
+    <table v-if="apiServerPresent" class="table-fixed text-sm">
       <thead>
-        <tr>
-          <th @click="order('model')">Model</th>
-          <th @click="order('ram')">RAM</th>
-          <th @click="order('hdd')">HDD</th>
-          <th @click="order('location')">Location</th>
-          <th @click="order('price')">Price</th>
+        <tr class="cursor-pointer">
+          <th></th>
+          <th @click.prevent="order('model')">Model<ChevronUpIcon class="h-4 w-4 inline ml-5" :class="{ 'stroke-blue-500': currentRequest.order?.model === 'asc' }" /><ChevronDownIcon class="h-4 w-4 inline" :class="{ 'stroke-blue-500': currentRequest.order?.model === 'desc' }" /></th>
+          <th @click.prevent="order('ram')">RAM<ChevronUpIcon class="h-4 w-4 inline ml-5" :class="{ 'stroke-blue-500': currentRequest.order?.ram === 'asc' }" /><ChevronDownIcon class="h-4 w-4 inline" :class="{ 'stroke-blue-500': currentRequest.order?.ram === 'desc' }" /></th>
+          <th @click.prevent="order('hdd')">HDD<ChevronUpIcon class="h-4 w-4 inline ml-5" :class="{ 'stroke-blue-500': currentRequest.order?.hdd === 'asc' }" /><ChevronDownIcon class="h-4 w-4 inline" :class="{ 'stroke-blue-500': currentRequest.order?.hdd === 'desc' }" /></th>
+          <th @click.prevent="order('location')">Location<ChevronUpIcon class="h-4 w-4 inline ml-5" :class="{ 'stroke-blue-500': currentRequest.order?.location === 'asc' }" /><ChevronDownIcon class="h-4 w-4 inline" :class="{ 'stroke-blue-500': currentRequest.order?.location === 'desc' }" /></th>
+          <th @click.prevent="order('price')">Price<ChevronUpIcon class="h-4 w-4 inline ml-2" :class="{ 'stroke-blue-500': currentRequest.order?.price === 'asc' }" /><ChevronDownIcon class="h-4 w-4 inline" :class="{ 'stroke-blue-500': currentRequest.order?.price === 'desc' }" /></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="server in servers" :key="server.id">
-          <td>{{ server.model }}</td>
-          <td>{{ server.ram }}</td>
-          <td>{{ server.hdd }}</td>
-          <td>{{ server.location }}</td>
-          <td>{{ server.price }}</td>
+          <td class="pr-2"><input type="checkbox" v-model="selectedServers" :value="server"></td>
+          <td class="pr-2">{{ server.model }}</td>
+          <td class="pr-2">{{ server.ram }}</td>
+          <td class="pr-2">{{ server.hdd }}</td>
+          <td class="pr-2">{{ server.location }}</td>
+          <td class="pr-2">{{ server.price }}</td>
         </tr>
       </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="5">
-            <Pagination 
-              @changePage="requestPage"
-              v-model="meta"
-            />
-          </td>
-        </tr>
-      </tfoot>
     </table>
     <div v-else>
-      Unable to fetch server list<br/>
-      Make sure you are running the backend at <a :href="apiUrl">{{apiUrl}}</a>
+      Unable to fetch server list
     </div>
+    <Pagination 
+      @changePage="requestPage"
+      v-model="meta"
+    />
+    <Compare :a="selectedServers[0]" :b="selectedServers[1]" v-if="selectedServers.length === 2"/>
   </div>
+
+  
 </template>

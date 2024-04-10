@@ -20,7 +20,7 @@ readonly class ServerComparator
 
     public function compareRam(Server $a, Server $b): int
     {
-        return intval($a->getRam()) <=> intval($b->getRam());
+        return intval($a->getRam()->getSize()) <=> intval($b->getRam()->getSize());
     }
 
     public function compareHdd(Server $a, Server $b): int{
