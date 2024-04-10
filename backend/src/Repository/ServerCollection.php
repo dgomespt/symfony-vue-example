@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Comparator\ServerComparator;
-use App\Converter\HddSizeConverter;
 use App\Entity\Server;
 use App\Error\InvalidFilterFieldError;
 use App\Error\InvalidOrderDirectionError;
@@ -18,7 +17,8 @@ class ServerCollection extends ArrayCollection
 
     private ServerComparator $comparator;
 
-    public function __construct(array $elements = []){
+    public function __construct(array $elements = [])
+    {
         parent::__construct($elements);
 
         $this->comparator = new ServerComparator();
@@ -40,12 +40,12 @@ class ServerCollection extends ArrayCollection
     public function order(string $name, $direction = 'asc'): static
     {
 
-        if(!in_array($direction, ['asc', 'desc'])){
+        if (!in_array($direction, ['asc', 'desc'])) {
             throw new InvalidOrderDirectionError("Invalid order direction: $direction");
         }
 
-        $getter = 'get'.ucfirst($name);
-        if(!method_exists(Server::class, $getter)){
+        $getter = 'get' . ucfirst($name);
+        if (!method_exists(Server::class, $getter)) {
             throw new InvalidOrderFieldError("Trying to order by unknown property: $name");
         }
 
@@ -61,18 +61,20 @@ class ServerCollection extends ArrayCollection
      * @return $this
      * @throws InvalidFilterFieldError|Exception
      */
-    public function applyFilters(array $filters): static{
+    public function applyFilters(array $filters): static
+    {
 
         $allServers = $this->createFrom($this->getIterator()->getArrayCopy());
 
-        foreach($filters as $name => $value){
+        foreach ($filters as $name => $value) {
 
-            if($value == 'any') continue;
+            if ($value == 'any') continue;
 
             $allServers = match (strtolower($name)) {
                 'ram' => $allServers->filter($this->filterByRam($value)),
                 'storage' => $allServers->filter($this->filterByStorage($value)),
                 'location' => $allServers->filter($this->filterByLocation($value)),
+                'hddtype' => $allServers->filter($this->filterByHddType($value)),
                 default => throw new InvalidFilterFieldError("Trying to filter by unknown property: $name")
             };
         }
@@ -81,23 +83,30 @@ class ServerCollection extends ArrayCollection
 
     public function filterByRam(string $value): Closure
     {
-        $values =  array_unique(explode(',', $value));
-        return function(Server $server) use ($values) {
-            return in_array($server->getRam(), $values);
+        $values = array_unique(explode(',', $value));
+        return function (Server $server) use ($values) {
+            return in_array($server->getRam()->getSize(), $values);
         };
     }
 
-    public function filterByStorage( $value): Closure
+    public function filterByStorage(string $value): Closure
     {
-        return function(Server $server) use ($value) {
+        return function (Server $server) use ($value) {
             return $server->getHdd()->getTotalCapacityInGb() == $value;
         };
     }
 
-    public function filterByLocation( $value): Closure
+    public function filterByLocation(string $value): Closure
     {
         return function(Server $server) use ($value) {
             return strpos($server->getLocation(), $value);
+        };
+    }
+
+    public function filterByHddType(string $value): Closure
+    {
+        return function (Server $server) use ($value) {
+            return str_contains($server->getHdd()->getType(), $value);
         };
     }
 

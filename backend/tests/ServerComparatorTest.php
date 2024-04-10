@@ -5,6 +5,7 @@ namespace App\Tests;
 use App\Comparator\ServerComparator;
 use App\Entity\Hdd;
 use App\Entity\Price;
+use App\Entity\Ram;
 use App\Entity\Server;
 use PHPUnit\Framework\TestCase;
 
@@ -20,8 +21,8 @@ class ServerComparatorTest extends TestCase
     public function testCompareRam(string $ram1, string $ram2, int $expected): void
     {
 
-        $a = new Server('1', 'a', $ram1, new Hdd(1,1), 'a', new Price(1, 'USD'));
-        $b = new Server('2', 'b', $ram2, new Hdd(1,1), 'a', new Price(1, 'USD'));
+        $a = new Server('1', 'a', Ram::fromString($ram1), Hdd::fromString('1x1TBSATA'), 'a', new Price(1, 'USD'));
+        $b = new Server('2', 'b', Ram::fromString($ram2), Hdd::fromString('1x1TBSATA'), 'a', new Price(1, 'USD'));
 
         $c = new ServerComparator();
 
@@ -58,8 +59,8 @@ class ServerComparatorTest extends TestCase
      */
     public function testCompareHdd(string $hdd1, string $hdd2, int $expected): void{
 
-        $a = new Server('', '', '', Hdd::fromString($hdd1), '', new Price(1, 'USD'));
-        $b = new Server('', '', '', Hdd::fromString($hdd2), '', new Price(1, 'USD'));
+        $a = new Server('', '', Ram::fromString('8GBDDR5'), Hdd::fromString($hdd1), '', new Price(1, 'USD'));
+        $b = new Server('', '', Ram::fromString('8GBDDR5'), Hdd::fromString($hdd2), '', new Price(1, 'USD'));
 
         $c = new ServerComparator();
         $this->assertEquals($expected, $c->compareHdd($a, $b));
@@ -101,8 +102,8 @@ class ServerComparatorTest extends TestCase
     public function testComparePrice(Price $price1, Price $price2, int $expected): void
     {
 
-        $a = new Server('', '', '', new Hdd(1,1), '', $price1);
-        $b = new Server('', '', '', new Hdd(1,1), '', $price2);
+        $a = new Server('', '', Ram::fromString('8GBDDR5'), Hdd::fromString('1x1TBSATA'), '', $price1);
+        $b = new Server('', '', Ram::fromString('8GBDDR5'), Hdd::fromString('1x1TBSATA'), '', $price2);
 
         $c = new ServerComparator();
         $this->assertEquals($expected, $c->comparePrice($a, $b));

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Hdd;
 use App\Entity\Price;
+use App\Entity\Ram;
 use App\Entity\Server;
 use App\Interface\RepositoryInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -40,7 +41,7 @@ readonly class ServerRepository implements RepositoryInterface
             $serverObj = new Server(
                 $idx,
                 $row['model'],
-                $row['ram'],
+                Ram::fromString($row['ram']),
                 Hdd::fromString($row['hdd']),
                 $row['location'],
                 Price::fromString($row['price'])

@@ -7,7 +7,8 @@ class Hdd
     private string $unit = 'GB';
     public function __construct(
         private readonly int $capacity,
-        private readonly int $numberOfDisks
+        private readonly int $numberOfDisks,
+        private readonly string $type
     ){
 
     }
@@ -16,13 +17,15 @@ class Hdd
 
         $capacity = $value;
         $numberOfDisks = 1;
+        $type = '';
 
-        if (preg_match('/(\d+)x(\d+)(\D{2})/', $value, $matches)) {
+        if (preg_match('/(\d+)x(\d+)(\D{2})(\w+)/', $value, $matches)) {
             $capacity = intval($matches[2]);
             $numberOfDisks = intval($matches[1]);
+            $type = $matches[4] ?? '';
         }
 
-        $hdd = new static($capacity, $numberOfDisks);
+        $hdd = new static($capacity, $numberOfDisks, $type);
         $hdd->unit = $matches[3] ?? 'GB';
 
         return $hdd;
@@ -55,8 +58,12 @@ class Hdd
         return $this->unit;
     }
 
-    public function toString(): string{
+    public function getType(): string
+    {
+        return $this->type;
+    }
 
-        return "{$this->numberOfDisks}x{$this->capacity}{$this->unit}";
+    public function toString(): string{
+        return "{$this->numberOfDisks}x{$this->capacity}{$this->unit}{$this->type}";
     }
 }

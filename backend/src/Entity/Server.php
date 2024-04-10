@@ -9,7 +9,7 @@ readonly class Server implements JsonSerializable
     public function __construct(
         private string $id,
         private string $model,
-        private string $ram,
+        private Ram $ram,
         private Hdd $hdd,
         private string $location,
         private Price $price){
@@ -25,7 +25,7 @@ readonly class Server implements JsonSerializable
         return $this->model;
     }
 
-    public function getRam(): string
+    public function getRam(): Ram
     {
         return $this->ram;
     }
@@ -51,24 +51,12 @@ readonly class Server implements JsonSerializable
         return $this->toArray();
     }
 
-    protected function getHddValue(): string{
-
-        preg_match('/(\d+)x(\d+)(\D{2})/', $this->hdd, $matches);
-
-        if($matches){
-            $multiplier = $matches[3] === 'TB' ? 1000 : 1;
-            return intval($matches[1]) * intval($matches[2]) * $multiplier;
-        }
-
-        return $this->hdd;
-    }
-
     public function toArray(): array
     {
         return [
             'id' => $this->id,
             'model' => $this->model,
-            'ram' => $this->ram,
+            'ram' => $this->ram->toString(),
             'hdd' => $this->hdd->toString(),
             'location' => $this->location,
             'price' => $this->price->toString()

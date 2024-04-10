@@ -4,13 +4,14 @@ import type { Meta, RequestParams, Server } from '../types';
 import { ref } from 'vue'
 
 import Filters from './Filters.vue'
+import Pagination from './Pagination.vue'
 
 const apiUrl = 'http://localhost/servers'
 const apiServerPresent = ref<boolean>(false)
 
 const currentRequest = ref<RequestParams>({
   'page': 1,
-  'itemsPerPage': 10
+  'itemsPerPage': 25
 })
 
 const meta = ref<Meta>({})
@@ -103,6 +104,15 @@ async function getPage(requestParams: RequestParams): Promise<Server[]> {
     }))
     return servers
 }
+
+function requestPage(page: number){
+
+  console.log(page);
+  const r = currentRequest.value;
+  r.page = page;
+  loadPage(r)
+}
+
 </script>
 
 <template>
@@ -129,7 +139,12 @@ async function getPage(requestParams: RequestParams): Promise<Server[]> {
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="5">Showing {{ servers.length }} of {{ meta.total || servers.length }} servers</td>
+          <td colspan="5">
+            <Pagination 
+              @changePage="requestPage"
+              v-model="meta"
+            />
+          </td>
         </tr>
       </tfoot>
     </table>

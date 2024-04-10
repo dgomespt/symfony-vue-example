@@ -43,6 +43,7 @@ readonly class GetServersUseCase
 
         return new GetServersResponse(
             new Meta($page,
+                $itemsPerPage,
                 $servers->count(),
                 $allServers->count()
             ), array_values($servers->toArray()));

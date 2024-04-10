@@ -40,9 +40,9 @@ const filterValues = {
     },
     'hddType' : {
         'any': 'Any',
-        'sas': 'SAS',
-        'sata': 'SATA',
-        'ssd': 'SSD'
+        'SAS': 'SAS',
+        'SATA': 'SATA',
+        'SSD': 'SSD'
     },
     'location' : {
         'any': 'Any',
@@ -52,7 +52,7 @@ const filterValues = {
         'HKG': 'Hong Kong',
         'SFO': 'San Francisco',
         'SIN': 'Singapore',
-        'DCWDC': 'Washington'
+        'WDC': 'Washington'
     }
 }
 
@@ -73,8 +73,12 @@ function handleRamSelection(target: HTMLInputElement) {
                 }
             }
             
-            appliedFilters.value.ram.push(checkboxValue);
         }
+
+        if(appliedFilters.value.ram.length === 0){
+            appliedFilters.value.ram = ['any'];
+        }
+        
 
     }
 

@@ -1,3 +1,10 @@
+# LW Servers
+
+This app reads an .xlsx file containing a list of server information and serves it over an API endpoint.
+
+The frontend app will allow you to filter, order and navigate the result pages.
+
+# Spin the App
 
 ## Setup ENV
 
@@ -16,12 +23,7 @@ docker-compose up -d
 docker-compose exec php-fpm composer install
 ```
 
-## Test the backend is working
-
-[http://localhost](http://localhost)
-
-## Frontend
-
+## Open the frontend
 [http://localhost:8080](http://localhost:8080)
 
 
@@ -37,10 +39,15 @@ docker-compose up -d vue
 You can then run the dev server: 
 
 ```
+docker-compose exec vue npm i
 docker-compose exec vue npm run dev
 ```
 
-Or build the project to expose it in [http://localhost:8080](http://localhost:8080)
+And go to [http://localhost:5173/](http://localhost:5173/)
+
+### Build the frontend
+
+Build the project dist available through [http://localhost:8080](http://localhost:8080):
 
 ```
 docker-compose exec vue npm run build

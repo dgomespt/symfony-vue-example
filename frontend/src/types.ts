@@ -9,7 +9,7 @@ export interface Server {
 }
 
 export type Meta = {
-  [key: string]: string
+  [key: string]: any
 }
 
 export type RequestParams = {

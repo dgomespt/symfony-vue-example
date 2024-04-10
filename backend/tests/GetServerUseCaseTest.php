@@ -3,6 +3,9 @@
 namespace App\Tests;
 
 use App\Controller\ServersController;
+use App\Entity\Hdd;
+use App\Entity\Price;
+use App\Entity\Ram;
 use App\Entity\Server;
 use App\Interface\RepositoryInterface;
 use App\Repository\ServerCollection;
@@ -26,14 +29,14 @@ class GetServerUseCaseTest extends KernelTestCase
             'id' => 1,
             'model' => 'test',
             'ram' => '16GBDDR4',
-            'hdd' => '500GB',
+            'hdd' => '1x500GBSSD',
             'location' => 'AMS',
             'price' => '€50.00'
         ];
 
         $repository = $this->createMock(RepositoryInterface::class);
         $repository->expects(self::once())->method('all')->willReturn(new ServerCollection([
-            new Server(...$server),
+            new Server($server['id'], $server['model'], Ram::fromString($server['ram']), Hdd::fromString($server['hdd']), $server['location'], Price::fromString($server['price'])),
         ]));
         static::getContainer()->set(RepositoryInterface::class, $repository);
 
@@ -46,7 +49,10 @@ class GetServerUseCaseTest extends KernelTestCase
             'meta' => [
                 'page' => 1,
                 'showing' => 1,
-                'total' => 1
+                'total' => 1,
+                'start' => 1,
+                'end' => 1,
+                'itemsPerPage' => 10
             ],
             'data' => [
                 $server
@@ -69,7 +75,10 @@ class GetServerUseCaseTest extends KernelTestCase
             'meta' => [
                 'page' => 1,
                 'showing' => 0,
-                'total' => 0
+                'total' => 0,
+                'start' => 1,
+                'end' => 0,
+                'itemsPerPage' => 10
             ],
             'data' => []
         ], $result);
