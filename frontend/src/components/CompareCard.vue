@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-    <div v-if="server" class="border-rounded border-2 mb-5 p-5">
+    <div v-if="server" class="border-l-2 p-5">
         <h3>{{ server.model }}</h3>
         <p :class="{ 'text-red-500': highlights.includes('ram')}">{{ server.ram }}</p>
         <p :class="{ 'text-red-500': highlights.includes('hdd')}">{{ server.hdd }}</p>

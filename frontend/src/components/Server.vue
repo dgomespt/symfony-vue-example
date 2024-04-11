@@ -131,7 +131,7 @@ watch<Server[]>(selectedServers, async (servers) => {
 </script>
 
 <template>
-  <div class="width-full flex flex-col items-center justify-center align-top">
+  <div class="flex flex-col items-center justify-center align-top">
     <Filters @filtersChanged="applyFilters"/>
     <Pagination 
       @changePage="requestPage"
@@ -162,12 +162,13 @@ watch<Server[]>(selectedServers, async (servers) => {
     <div v-else>
       Unable to fetch server list
     </div>
-    <Pagination 
+    <Pagination class="mt-5"
       @changePage="requestPage"
       v-model="meta"
     />
-    <Compare :a="selectedServers[0]" :b="selectedServers[1]" v-if="selectedServers.length === 2"/>
+
+    <Compare class="flex flex-col items-center justify-center align-top" :a="selectedServers?.[0]" :b="selectedServers?.[1]" />
+    
   </div>
 
-  
 </template>
