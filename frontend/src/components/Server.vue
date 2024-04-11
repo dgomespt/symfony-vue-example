@@ -73,6 +73,7 @@ function order(field: string): void {
   }
 
   loadPage(r);
+  selectedServers.value = [];
 
 }
 
@@ -86,6 +87,7 @@ function applyFilters(appliedFilters: any): void {
   }
   
   loadPage(r)
+  selectedServers.value = [];
 }
 
 const selectedServers = ref<Server[]>([])
@@ -156,6 +158,9 @@ watch<Server[]>(selectedServers, async (servers) => {
           <td class="pr-2">{{ server.hdd }}</td>
           <td class="pr-2">{{ server.location }}</td>
           <td class="pr-2">{{ server.price }}</td>
+        </tr>
+        <tr v-if="servers.length === 0">
+          <td colspan="6" class="p-5 text-center text-red-800"><b>No servers found according to your filters</b></td>
         </tr>
       </tbody>
     </table>
