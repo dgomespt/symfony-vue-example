@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use JsonSerializable;
 
-readonly class Server implements JsonSerializable
+final readonly class Server implements JsonSerializable
 {
     public function __construct(
         private string $id,

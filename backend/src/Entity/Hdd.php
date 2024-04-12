@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-class Hdd
+final class Hdd
 {
     private string $unit = 'GB';
     public function __construct(
@@ -15,17 +15,17 @@ class Hdd
 
     public static function fromString(string $value): Hdd{
 
-        $capacity = $value;
+        $capacity = intval($value);
         $numberOfDisks = 1;
         $type = '';
 
-        if (preg_match('/(\d+)x(\d+)(\D{2})(\w+)/', $value, $matches)) {
+        if (preg_match('/(\d+)x(\d+)(\D{2})(\w+)?/', $value, $matches)) {
             $capacity = intval($matches[2]);
             $numberOfDisks = intval($matches[1]);
             $type = $matches[4] ?? '';
         }
 
-        $hdd = new static($capacity, $numberOfDisks, $type);
+        $hdd = new Hdd($capacity, $numberOfDisks, $type);
         $hdd->unit = $matches[3] ?? 'GB';
 
         return $hdd;
@@ -43,27 +43,12 @@ class Hdd
         return $this->numberOfDisks * $this->capacity * $multiplier;
     }
 
-    public function getCapacity(): int
-    {
-        return $this->capacity;
-    }
-
-    public function getNumberOfDisks(): int
-    {
-        return $this->numberOfDisks;
-    }
-
-    public function getUnit(): string
-    {
-        return $this->unit;
-    }
-
     public function getType(): string
     {
         return $this->type;
     }
 
     public function toString(): string{
-        return "{$this->numberOfDisks}x{$this->capacity}{$this->unit}{$this->type}";
+        return "{$this->numberOfDisks}x$this->capacity$this->unit$this->type";
     }
 }

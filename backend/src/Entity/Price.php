@@ -5,13 +5,13 @@ namespace App\Entity;
 use NumberFormatter;
 use Symfony\Component\Intl\Currencies;
 
-class Price
+final readonly class Price
 {
-    public const DEFAULT_CURRENCY_CODE = 'EUR';
+    public const string DEFAULT_CURRENCY_CODE = 'EUR';
 
     public function __construct(
-        private readonly int    $price,
-        private readonly string $currencyCode
+        private int    $price,
+        private string $currencyCode
     )
     {
 
@@ -41,7 +41,7 @@ class Price
     {
         $symbol = Currencies::getSymbol($this->currencyCode);
 
-        return $symbol.number_format($this->price/100, 2, '.', ',');
+        return $symbol.number_format($this->price/100, 2);
     }
 
 

@@ -2,7 +2,7 @@
 
 namespace App\Response;
 
-class Meta
+final class Meta
 {
 
     public function __construct(

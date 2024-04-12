@@ -9,17 +9,25 @@ use App\Entity\Ram;
 use App\Entity\Server;
 use App\Interface\RepositoryInterface;
 use App\Repository\ServerCollection;
+use App\Request\GetServersRequest;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GetServerUseCaseTest extends KernelTestCase
 {
+
+    private RepositoryInterface $repositoryMock;
+    private ValidatorInterface $validatorMock;
     public function setUp(): void
     {
         parent::setUp();
 
-        $kernel = self::bootKernel();
+        self::bootKernel();
+
+        $this->repositoryMock = $this->createMock(RepositoryInterface::class);
+
+        $this->validatorMock = $this->createMock(ValidatorInterface::class);
 
     }
 
@@ -34,14 +42,14 @@ class GetServerUseCaseTest extends KernelTestCase
             'price' => '€50.00'
         ];
 
-        $repository = $this->createMock(RepositoryInterface::class);
-        $repository->expects(self::once())->method('all')->willReturn(new ServerCollection([
+        $this->repositoryMock->expects(self::once())->method('all')->willReturn(new ServerCollection([
             new Server($server['id'], $server['model'], Ram::fromString($server['ram']), Hdd::fromString($server['hdd']), $server['location'], Price::fromString($server['price'])),
         ]));
-        static::getContainer()->set(RepositoryInterface::class, $repository);
+        static::getContainer()->set(RepositoryInterface::class, $this->repositoryMock);
 
         $controller = static::getContainer()->get(ServersController::class);
-        $response = $controller->index(new Request([]));
+
+        $response = $controller->index(new GetServersRequest( $this->validatorMock));
         $this->assertInstanceOf(JsonResponse::class, $response);
 
         $result = json_decode($response->getContent(), true, 512, JSON_OBJECT_AS_ARRAY);
@@ -52,7 +60,7 @@ class GetServerUseCaseTest extends KernelTestCase
                 'total' => 1,
                 'start' => 1,
                 'end' => 1,
-                'itemsPerPage' => 10
+                'itemsPerPage' => 50
             ],
             'data' => [
                 $server
@@ -63,12 +71,11 @@ class GetServerUseCaseTest extends KernelTestCase
 
     public function testEmptyResultsReturned(){
 
-        $repository = $this->createMock(RepositoryInterface::class);
-        $repository->expects(self::once())->method('all')->willReturn(new ServerCollection([]));
-        static::getContainer()->set(RepositoryInterface::class, $repository);
+        $this->repositoryMock->expects(self::once())->method('all')->willReturn(new ServerCollection([]));
+        static::getContainer()->set(RepositoryInterface::class, $this->repositoryMock);
 
         $controller = static::getContainer()->get(ServersController::class);
-        $response = $controller->index(new Request([]));
+        $response = $controller->index(new GetServersRequest( $this->validatorMock));
 
         $result = json_decode($response->getContent(), true, 512, JSON_OBJECT_AS_ARRAY);
         $this->assertEquals([
@@ -78,7 +85,7 @@ class GetServerUseCaseTest extends KernelTestCase
                 'total' => 0,
                 'start' => 1,
                 'end' => 0,
-                'itemsPerPage' => 10
+                'itemsPerPage' => 50
             ],
             'data' => []
         ], $result);

@@ -1,6 +1,15 @@
 FROM phpdockerio/php:8.3-fpm
 WORKDIR "/application"
 
+ARG UNAME=www-data
+ARG UGROUP=www-data
+ARG UID=1000
+ARG GID=1001
+RUN usermod  --uid $UID $UNAME
+RUN groupmod --gid $GID $UGROUP
+
+
+
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
         git \
@@ -13,4 +22,3 @@ RUN apt-get update \
         php8.3-yaml \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
-

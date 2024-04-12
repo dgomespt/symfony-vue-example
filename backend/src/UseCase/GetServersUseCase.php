@@ -8,7 +8,7 @@ use App\Response\GetServersResponse;
 use App\Response\Meta;
 use Exception;
 
-readonly class GetServersUseCase
+final readonly class GetServersUseCase
 {
 
     public function __construct(
@@ -34,7 +34,7 @@ readonly class GetServersUseCase
 
         $allServers = $allServers->applyFilters($filters);
 
-        if (null !== $order) {
+        if (!empty($order)) {
             $order = array_slice($order, 0, 1);
             $allServers = $allServers->order(key($order), $order[key($order)]);
         }

@@ -4,7 +4,7 @@ namespace App\Response;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class GetServersResponse
+final class GetServersResponse
 {
 
     public function __construct(

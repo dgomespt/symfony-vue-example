@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Request\GetServersRequest;
 use App\UseCase\GetServersUseCase;
 use Error;
 use Exception;
@@ -10,6 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ServersController extends AbstractController
@@ -23,19 +26,20 @@ class ServersController extends AbstractController
     }
 
 
-    #[Route('/servers', name: 'servers')]
-    public function index(Request $request): JsonResponse
+    #[Route('/servers', name: 'servers', methods: ['GET'], format: 'json')]
+    public function index(
+        GetServersRequest $getServersRequest
+    ): JsonResponse
     {
         try {
             $response = $this->getServersUseCase->handle(
-                $request->get('page', 1),
-                $request->get('itemsPerPage', 10),
-                $request->get('filters', [])
-                , $request->get('order'));
+                $getServersRequest->getPage(),
+                $getServersRequest->getItemsPerPage(),
+                $getServersRequest->getFilters()
+                , $getServersRequest->getOrder());
 
             return new JsonResponse($response->toArray());
 
-            //return $response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
         }
         catch(Error $e){
             return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
