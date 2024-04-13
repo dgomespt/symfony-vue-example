@@ -95,7 +95,9 @@ docker-compose exec vue npm run build
 
 ## Unit tests
 
-Run the unit test suite with
+There are some unit and integration tests included.
+
+Run the unit test suite with:
 ``` 
 docker-compose exec php-fpm ./bin/phpunit
 ```
