@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class ServersControllerTest extends WebTestCase
 {
@@ -23,7 +24,7 @@ class ServersControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/servers?page=invalid_page_value');
 
-        $this->assertResponseIsUnprocessable();
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
     }
 
 }

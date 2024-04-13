@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace App\Servers;
 
-use App\Comparator\ServerComparator;
-use App\Entity\Server;
 use App\Error\InvalidFilterFieldError;
 use App\Error\InvalidOrderDirectionError;
 use App\Error\InvalidOrderFieldError;
+use App\Servers\Entity\Server;
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Exception;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Servers\Entity;
 
 use NumberFormatter;
 use Symfony\Component\Intl\Currencies;

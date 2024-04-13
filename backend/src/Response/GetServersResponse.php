@@ -2,10 +2,12 @@
 
 namespace App\Response;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use JsonSerializable;
+use Symfony\Component\HttpFoundation\Response;
 
-final class GetServersResponse
+final class GetServersResponse implements JsonSerializable
 {
+    private int $status = Response::HTTP_OK;
 
     public function __construct(
         protected Meta $meta,
@@ -13,7 +15,7 @@ final class GetServersResponse
     ){
     }
 
-    public function toArray(): array
+    public function jsonSerialize(): array
     {
         return [
             'meta' => $this->meta->toArray(),

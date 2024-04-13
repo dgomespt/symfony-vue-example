@@ -28,21 +28,16 @@ class ServersController extends AbstractController
 
     #[Route('/servers', name: 'servers', methods: ['GET'], format: 'json')]
     public function index(
-        GetServersRequest $getServersRequest
+        Request $request
     ): JsonResponse
     {
         try {
             $response = $this->getServersUseCase->handle(
-                $getServersRequest->getPage(),
-                $getServersRequest->getItemsPerPage(),
-                $getServersRequest->getFilters()
-                , $getServersRequest->getOrder());
+                GetServersRequest::fromRequest($request)
+            );
 
-            return new JsonResponse($response->toArray());
+            return new JsonResponse($response, $response->status);
 
-        }
-        catch(Error $e){
-            return $this->json($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
         catch (Exception $e) {
             $this->logger->error("Failed to fetch server list: {$e->getMessage()}", ['exception' => $e]);

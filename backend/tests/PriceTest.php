@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\Entity\Price;
+use App\Servers\Entity\Price;
 use PHPUnit\Framework\TestCase;
 
 class PriceTest extends TestCase

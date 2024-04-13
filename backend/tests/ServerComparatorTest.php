@@ -2,11 +2,11 @@
 
 namespace App\Tests;
 
-use App\Comparator\ServerComparator;
-use App\Entity\Hdd;
-use App\Entity\Price;
-use App\Entity\Ram;
-use App\Entity\Server;
+use App\Servers\Entity\Hdd;
+use App\Servers\Entity\Price;
+use App\Servers\Entity\Ram;
+use App\Servers\Entity\Server;
+use App\Servers\ServerComparator;
 use PHPUnit\Framework\TestCase;
 
 class ServerComparatorTest extends TestCase
@@ -94,7 +94,7 @@ class ServerComparatorTest extends TestCase
 
     /**
      * @dataProvider providePriceTests
-     * @param Price $price1
+     * @param \App\Servers\Entity\Price $price1
      * @param Price $price2
      * @param int $expected
      * @return void

@@ -3,15 +3,16 @@
 namespace App\Tests;
 
 use App\Controller\ServersController;
-use App\Entity\Hdd;
-use App\Entity\Price;
-use App\Entity\Ram;
-use App\Entity\Server;
 use App\Interface\RepositoryInterface;
-use App\Repository\ServerCollection;
 use App\Request\GetServersRequest;
+use App\Servers\Entity\Hdd;
+use App\Servers\Entity\Price;
+use App\Servers\Entity\Ram;
+use App\Servers\Entity\Server;
+use App\Servers\ServerCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GetServerUseCaseTest extends KernelTestCase
@@ -49,7 +50,7 @@ class GetServerUseCaseTest extends KernelTestCase
 
         $controller = static::getContainer()->get(ServersController::class);
 
-        $response = $controller->index(new GetServersRequest( $this->validatorMock));
+        $response = $controller->index(new Request([]));
         $this->assertInstanceOf(JsonResponse::class, $response);
 
         $result = json_decode($response->getContent(), true, 512, JSON_OBJECT_AS_ARRAY);
@@ -75,7 +76,7 @@ class GetServerUseCaseTest extends KernelTestCase
         static::getContainer()->set(RepositoryInterface::class, $this->repositoryMock);
 
         $controller = static::getContainer()->get(ServersController::class);
-        $response = $controller->index(new GetServersRequest( $this->validatorMock));
+        $response = $controller->index(new Request([]));
 
         $result = json_decode($response->getContent(), true, 512, JSON_OBJECT_AS_ARRAY);
         $this->assertEquals([

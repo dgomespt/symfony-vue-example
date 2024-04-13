@@ -2,11 +2,12 @@
 
 namespace App\Repository;
 
-use App\Entity\Hdd;
-use App\Entity\Price;
-use App\Entity\Ram;
-use App\Entity\Server;
 use App\Interface\RepositoryInterface;
+use App\Servers\Entity\Hdd;
+use App\Servers\Entity\Price;
+use App\Servers\Entity\Ram;
+use App\Servers\Entity\Server;
+use App\Servers\ServerCollection;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;

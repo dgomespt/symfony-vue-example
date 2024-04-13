@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Comparator;
+namespace App\Servers;
 
-use App\Entity\Server;
+use App\Servers\Entity\Server;
 
 readonly class ServerComparator
 {

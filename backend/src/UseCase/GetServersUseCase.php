@@ -3,30 +3,45 @@
 namespace App\UseCase;
 
 use App\Interface\RepositoryInterface;
-use App\Repository\ServerCollection;
+use App\Request\GetServersRequest;
+use App\Response\ErrorResponse;
 use App\Response\GetServersResponse;
 use App\Response\Meta;
+use App\Servers\ServerCollection;
+use Doctrine\Common\Collections\Collection;
 use Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class GetServersUseCase
 {
 
     public function __construct(
+        protected ValidatorInterface  $validator,
         protected RepositoryInterface $serverRepository
     )
     {
     }
 
     /**
-     * @param int $page
-     * @param int $itemsPerPage
-     * @param array $filters
-     * @param array|null $order
-     * @return GetServersResponse
+     * @param GetServersRequest $request
+     * @return GetServersResponse|ErrorResponse
      * @throws Exception
      */
-    public function handle(int $page, int $itemsPerPage, array $filters, ?array $order): GetServersResponse
+    public function handle(GetServersRequest $request): GetServersResponse|ErrorResponse
     {
+        $errors = $this->validator->validate($request);
+        if($errors->count() > 0) {
+            return new ErrorResponse(
+                'validation_failed',
+                $this->formatValidationErrors($errors)
+            );
+        }
+        extract($request->toArray());
+
         $start = ($page - 1) * $itemsPerPage;
 
         /** @var ServerCollection $allServers */
@@ -47,5 +62,23 @@ final readonly class GetServersUseCase
                 $servers->count(),
                 $allServers->count()
             ), array_values($servers->toArray()));
+    }
+
+    /**
+     * @param ConstraintViolationList $errors
+     * @return array
+     */
+    private function formatValidationErrors(ConstraintViolationList $errors): array
+    {
+        /** @var ConstraintViolation $message */
+        foreach ($errors as $message) {
+            $formatted[] = [
+                'property' => $message->getPropertyPath(),
+                'value' => $message->getInvalidValue(),
+                'message' => $message->getMessage(),
+            ];
+        }
+
+        return $formatted ?? [];
     }
 }

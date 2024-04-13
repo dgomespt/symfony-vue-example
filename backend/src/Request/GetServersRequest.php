@@ -2,21 +2,22 @@
 
 namespace App\Request;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Type;
 
-final class GetServersRequest extends BaseRequest
+final class GetServersRequest
 {
 
     #[Positive]
     #[Type('numeric')]
-    protected mixed $page = 1;
+    public mixed $page;
 
     #[Positive]
     #[Type('numeric')]
-    protected mixed $itemsPerPage = 50;
+    public mixed $itemsPerPage;
 
     #[Collection(
         fields: [
@@ -28,7 +29,7 @@ final class GetServersRequest extends BaseRequest
         allowMissingFields: true,
         extraFieldsMessage: 'Allowed keys are (hddType, location, ram, storage)'
     )]
-    protected mixed $filters = [];
+    public mixed $filters = [];
 
     #[Collection(
         fields: [
@@ -41,44 +42,26 @@ final class GetServersRequest extends BaseRequest
         allowMissingFields: true,
         extraFieldsMessage: 'Allowed keys are (ram, price, model, hdd, location) and values are (asc, desc)'
     )]
-    protected mixed $order = [];
+    public mixed $order = [];
 
-
-    /**
-     * Override because we want the query string data to be populated, not the request body
-     * @return void
-     */
-    protected function populate(): void
+    public static function fromRequest(Request $request): GetServersRequest
     {
-        $queryData = [];
-        $qs = $this->getRequest()->getQueryString();
-        parse_str($qs, $queryData);
-
-        foreach ($queryData as $property => $value) {
-            if (property_exists($this, $property)) {
-                $this->{$property} = ($value);
-            }
-        }
+        $r = new GetServersRequest();
+        $r->page = $request->get('page', 1);
+        $r->itemsPerPage = $request->get('itemsPerPage', 50);
+        $r->filters = $request->get('filters', []);
+        $r->order = $request->get('order', []);
+        return $r;
     }
 
-    public function getPage(): ?int
+    public function toArray(): array
     {
-        return intval($this->page);
-    }
-
-    public function getItemsPerPage(): ?int
-    {
-        return intval($this->itemsPerPage);
-    }
-
-    public function getFilters(): array
-    {
-        return $this->filters;
-    }
-
-    public function getOrder(): array
-    {
-        return $this->order;
+        return [
+            'page' => intval($this->page),
+            'itemsPerPage' => intval($this->itemsPerPage),
+            'filters' => $this->filters,
+            'order' => $this->order
+        ];
     }
 
 }
