@@ -4,17 +4,56 @@ This app reads an .xlsx file containing a list of server information and serves 
 
 The frontend app will allow you to filter, order and navigate the result pages.
 
+## Implementation notes:
+
+### Loading data into the app:
+
+Since no database is required, I opted to load the file using `phpoffice/phpspreadsheet`, converting each row into a `Server` object and save the list in cache (redis).
+
+For the sake of brevity, I opted not to include a command to import the file contents and validate each row. 
+
+However, some effort was done to make sure that the data is extracted in a way that each field can be ordered and filtered correctly.
+
+    For instance, the HDD string `2x500TBSATA2` is split into parts:
+
+    - No of disks
+    - Type (SATA, SSD, etc.)
+    - Disk capacity
+    - Total capacity is computed in GB (i.e 1.000.000)
+
+### Serving the data
+The server list can then be accessed at ` GET /servers`
+
+The following query string params are supported (all optional):
+
+|Param|Default|Possible values|
+|---|---|---|
+|page|1|positive number|
+|itemsPerPage|50|positive number|
+|order[model]||asc, desc|
+|order[ram]||asc, desc|
+|order[hdd]||asc, desc|
+|order[location]||asc, desc|
+|order[price]||asc, desc|
+|filters[hddType]||any string|
+|filters[ram]||any string|
+|filters[storage]||any string|
+|filters[location]||any string|
+
+### Interacting with the data
+
+A Vue 3 app is included with the project.
+It allows you to:
+- Apply filters
+- Toggle column order
+- Navigate through pages
+- Pick two servers with differences highlighted
+
+All operations on the table data are done in the backend, except for comparing servers.
+
+The app is focused on function and some minor styling is applied with the aid of Tailwind.
+
 # Spin the App
-
-## Setup ENV
-
-To change the default ports for running the docker containers, 
-ser .env:
-
-```
-API_PORT=80
-FE_PORT=8080
-```
 
 ## Spin up API
 
@@ -22,16 +61,17 @@ FE_PORT=8080
 docker-compose up -d
 docker-compose exec php-fpm composer install
 ```
+Go to [http://localhost/servers](http://localhost/servers) if you want to check it is running.
 
-## Open the frontend
+## The frontend
+A frontend build is included and readily available at:
 [http://localhost:8080](http://localhost:8080)
 
+### Dev container
 
-## Frontend Dev container
+For the purpose of running development tasks I included a node/npm container that is **not** started by default.
 
-This container is used only for node/npm development and it is **not** started by default.
-
-To spin the container:
+If you need to spin the container:
 
 ```
 docker-compose up -d vue
@@ -51,4 +91,11 @@ Build the project dist available through [http://localhost:8080](http://localhos
 
 ```
 docker-compose exec vue npm run build
+```
+
+## Unit tests
+
+Run the unit test suite with
+``` 
+docker-compose exec php-fpm ./bin/phpunit
 ```
