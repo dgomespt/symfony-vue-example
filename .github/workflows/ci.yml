@@ -19,5 +19,4 @@ jobs:
       with:
         vendored_phpunit_path: backend/bin/phpunit
         bootstrap: backend/vendor/autoload.php
-        configuration: backend/phpunit.xml
         args: --coverage-text
