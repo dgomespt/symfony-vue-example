@@ -1,0 +1,18 @@
+name: PHP Unit Tests
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: php-actions/composer@v6 # or alternative dependency management
+        
+    - name: Unit tests
+      uses: php-actions/phpunit@v3
+      with:
+            bootstrap: backend/vendor/autoload.php
+            configuration: backend/test/phpunit.xml
+            args: --coverage-text
