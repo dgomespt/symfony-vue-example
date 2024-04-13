@@ -17,6 +17,7 @@ jobs:
     - name: Unit tests
       uses: php-actions/phpunit@v3
       with:
-            bootstrap: backend/vendor/autoload.php
-            configuration: test/phpunit.xml
-            args: --coverage-text
+        vendored_phpunit_path: backend/bin/phpunit
+        bootstrap: backend/vendor/autoload.php
+        configuration: backend/phpunit.xml
+        args: --coverage-text
