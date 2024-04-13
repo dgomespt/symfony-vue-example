@@ -8,11 +8,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: php-actions/composer@v6 # or alternative dependency management
+    - name: Install dependencies
+      uses: php-actions/composer@v6
+      with:
+        working_dir: backend/
+
         
     - name: Unit tests
       uses: php-actions/phpunit@v3
       with:
             bootstrap: backend/vendor/autoload.php
-            configuration: backend/test/phpunit.xml
+            configuration: test/phpunit.xml
             args: --coverage-text
