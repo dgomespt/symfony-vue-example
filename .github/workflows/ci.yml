@@ -20,6 +20,6 @@ jobs:
         php_version: "8.3"
         php_extensions: intl iconv ctype gd sodium zip
         version: "9.5.0"
-        bootstrap: backend/vendor/autoload.php
+        bootstrap: backend/tests/bootstrap.php
         configuration: backend/phpunit.xml.dist
         args: --coverage-text
