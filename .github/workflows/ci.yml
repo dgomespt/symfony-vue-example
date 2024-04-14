@@ -1,3 +1,7 @@
+name: lw-servers
+
+on: [push]
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -15,3 +19,4 @@ jobs:
     - name: Unit tests
       working-directory: backend/
       run: ./bin/phpunit 
+      
