@@ -12,7 +12,7 @@ jobs:
       uses: php-actions/composer@v6
       with:
         working_dir: backend/
-        php_extensions: intl iconv ctype gd sodium
+        php_extensions: intl iconv ctype gd sodium zip
         php_version: "8.3"
     - name: Check Symfony requirements
       run: backend/vendor/bin/requirements-checker
