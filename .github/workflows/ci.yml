@@ -17,6 +17,8 @@ jobs:
     - name: Unit tests
       uses: php-actions/phpunit@v3
       with:
+        php_version: "8.3"
+        php_extensions: intl iconv ctype gd sodium zip
         version: "9.5.0"
         bootstrap: backend/vendor/autoload.php
         configuration: backend/phpunit.xml.dist
