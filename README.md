@@ -1,3 +1,5 @@
+![example workflow](https://github.com/df3g/lw-servers/actions/workflows/ci.yml/badge.svg)
+
 # LW Servers
 
 This app reads an .xlsx file containing a list of server information and serves it over an API endpoint.
