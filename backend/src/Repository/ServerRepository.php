@@ -13,7 +13,7 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-readonly class ServerRepository implements RepositoryInterface
+class ServerRepository implements RepositoryInterface
 {
 
     public function __construct(

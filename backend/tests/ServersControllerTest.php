@@ -9,6 +9,7 @@ class ServersControllerTest extends WebTestCase
 {
     public function testRequestWithoutParameters(): void
     {
+
         $client = static::createClient();
         $client->request('GET', '/servers');
 

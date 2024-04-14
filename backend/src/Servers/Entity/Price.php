@@ -33,7 +33,7 @@ final readonly class Price
         }else{
             $parsed = $withoutWhiteSpace;
         }
-        return new self($parsed*100, $currencyCode ?? self::DEFAULT_CURRENCY_CODE);
+        return new self(ceil(round($parsed*100,2)), $currencyCode ?? self::DEFAULT_CURRENCY_CODE);
 
     }
 
