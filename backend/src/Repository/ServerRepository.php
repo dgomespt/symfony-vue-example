@@ -10,6 +10,7 @@ use App\Servers\Entity\Server;
 use App\Servers\ServerCollection;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -17,13 +18,15 @@ class ServerRepository implements RepositoryInterface
 {
 
     public function __construct(
-        protected CacheInterface $serverCache
+        protected CacheInterface $serverCache,
+        #[Autowire('%kernel.project_dir%/data/')]
+        protected string $storagePath
     ){
     }
 
     protected function loadFromFile(): ServerCollection
     {
-        $xls = IOFactory::load('/application/data/LeaseWeb_servers_filters_assignment.xlsx');
+        $xls = IOFactory::load($this->storagePath . 'LeaseWeb_servers_filters_assignment.xlsx');
         $xls->setActiveSheetIndex(0);
         $rows = $xls->getActiveSheet()->toArray();
 
