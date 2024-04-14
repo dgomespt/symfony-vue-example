@@ -20,5 +20,5 @@ jobs:
       uses: php-actions/phpunit@v3
       with:
         bootstrap: backend/vendor/autoload.php
-        configuration: vendor/phpunit.xml.dist
+        configuration: backend/vendor/phpunit.xml.dist
         args: --coverage-text
