@@ -1,4 +1,4 @@
-name: PHP Unit Tests
+name: lw-servers
 
 on: [push]
 
@@ -8,13 +8,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Setup PHP with PECL extension
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: intl iconv ctype gd sodium zip
     - name: Install dependencies
       uses: php-actions/composer@v6
       with:
         working_dir: backend/
-        php_extensions: intl iconv ctype gd sodium zip
-        php_version: "8.3"
     - name: Unit tests
       working-directory: backend/
       run: ./bin/phpunit 
-      
