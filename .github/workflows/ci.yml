@@ -17,6 +17,7 @@ jobs:
     - name: Unit tests
       uses: php-actions/phpunit@v3
       with:
+        version: "9.5.0"
         bootstrap: backend/vendor/autoload.php
         configuration: backend/phpunit.xml.dist
         args: --coverage-text
