@@ -13,11 +13,11 @@ final class GetServersRequest
 
     #[Positive]
     #[Type('numeric')]
-    public mixed $page;
+    public int $page;
 
     #[Positive]
     #[Type('numeric')]
-    public mixed $itemsPerPage;
+    public int $itemsPerPage;
 
     #[Collection(
         fields: [
@@ -29,7 +29,7 @@ final class GetServersRequest
         allowMissingFields: true,
         extraFieldsMessage: 'Allowed keys are (hddType, location, ram, storage)'
     )]
-    public mixed $filters = [];
+    public array $filters = [];
 
     #[Collection(
         fields: [
@@ -42,16 +42,30 @@ final class GetServersRequest
         allowMissingFields: true,
         extraFieldsMessage: 'Allowed keys are (ram, price, model, hdd, location) and values are (asc, desc)'
     )]
-    public mixed $order = [];
+    public array $order = [];
+
+    public function __construct(
+        int $page,
+        int $itemsPerPage,
+        array $order,
+        array $filters,
+    )
+    {
+        $this->page = $page;
+        $this->itemsPerPage = $itemsPerPage;
+        $this->filters = $filters;
+        $this->order = $order;
+    }
+
 
     public static function fromRequest(Request $request): GetServersRequest
     {
-        $r = new GetServersRequest();
-        $r->page = $request->get('page', 1);
-        $r->itemsPerPage = $request->get('itemsPerPage', 50);
-        $r->filters = $request->get('filters', []);
-        $r->order = $request->get('order', []);
-        return $r;
+        return new GetServersRequest(
+            intval($request->get('page', 1)),
+            intval($request->get('itemsPerPage', 50)),
+            $request->get('order', []),
+            $request->get('filters', [])
+        );
     }
 
     public function toArray(): array

@@ -61,7 +61,7 @@ final readonly class GetServersUseCase
                 $itemsPerPage,
                 $servers->count(),
                 $allServers->count()
-            ), array_values($servers->toArray()));
+            ), $servers);
     }
 
     /**

@@ -90,6 +90,15 @@ function filter(){
     emit('filtersChanged', appliedFilters.value);
 }
 
+function clear(){
+    appliedFilters.value = {
+        'storage': 'any',
+        'ram': ['any'],
+        'hddType': 'any',
+        'location': 'any'
+    };
+}
+
 </script>
 
 <template>
@@ -118,6 +127,9 @@ function filter(){
             <select v-model="appliedFilters.location" @change="filter">
                 <option v-for="(label, value) in filterValues.location" :key="value" :value="value">{{label}}</option>
             </select>
+        </div>
+        <div>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" @click="clear()">Clear</button>
         </div>
     </form>
     </div>

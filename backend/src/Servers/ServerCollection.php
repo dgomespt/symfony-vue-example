@@ -52,7 +52,7 @@ class ServerCollection extends ArrayCollection
         $i->uasort(fn($a, $b) => $this->comparator->compare($a, $b)[$name]);
 
         $results = iterator_to_array($i);
-        return new static($direction === 'asc' ? $results : array_reverse($results));
+        return new static($direction === 'asc' ? $results : array_reverse($results, true));
     }
 
     /**
@@ -98,7 +98,7 @@ class ServerCollection extends ArrayCollection
     public function filterByLocation(string $value): Closure
     {
         return function(Server $server) use ($value) {
-            return strpos($server->getLocation(), $value);
+            return str_contains($server->getLocation(), $value);
         };
     }
 

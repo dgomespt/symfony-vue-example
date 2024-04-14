@@ -36,7 +36,7 @@ class ServersController extends AbstractController
                 GetServersRequest::fromRequest($request)
             );
 
-            return new JsonResponse($response, $response->status);
+            return new JsonResponse($response, $response->getStatus());
 
         }
         catch (Exception $e) {
