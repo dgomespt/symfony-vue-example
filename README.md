@@ -57,19 +57,30 @@ The app is focused on function and some minor styling is applied with the aid of
 
 # Spin the App
 
-## Spin up API
-
 ```
 docker-compose up -d
 docker-compose exec php-fpm composer install
 ```
-Go to [http://localhost/servers](http://localhost/servers) if you want to check it is running.
+Go to [http://localhost:8080](http://localhost:8080) to access the frontend.
 
-## The frontend
-A frontend build is included and readily available at:
-[http://localhost:8080](http://localhost:8080)
 
-### Dev container
+# Development env:
+
+### Backend
+
+To enter the php-fpm container
+
+`docker-compose exec php-fpm /bin/bash`
+
+Useful commands:
+
+```
+composer install #install composer dependencies
+./bin/phpunit #run unit tests
+./bin/console cache:pool:clear server.cache #clear contents of cached servers
+```
+
+### Frontend Dev container
 
 For the purpose of running development tasks I included a node/npm container that is **not** started by default.
 
@@ -94,6 +105,8 @@ Build the project dist available through [http://localhost:8080](http://localhos
 ```
 docker-compose exec vue npm run build
 ```
+
+After building, it is recommended that you restart the webserver container
 
 ## Unit tests
 
