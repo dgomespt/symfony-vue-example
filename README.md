@@ -1,10 +1,15 @@
 ![example workflow](https://github.com/df3g/lw-servers/actions/workflows/ci.yml/badge.svg)
 
-# LW Servers
+# About
+Example fullstack application using [Symfony](https://symfony.com/) and [Vue.js](https://vuejs.org/). This was part of a job interview challenge and is not aimed at solving any problem in particular.
 
-This app reads an .xlsx file containing a list of server information and serves it over an API endpoint.
+> This app is not ready for production, it is merely the result of an exercise do demonstrate programming skills in this particular stack.
 
-The frontend app will allow you to filter, order and navigate the result pages.
+## Description of functionality
+
+This app loads an .xlsx file containing a list of servers and their characteristics, loads it into REDIS and serves it over an API endpoint to be consumed by the frontend.
+
+The frontend app will allow you to filter, order and navigate the result pages as well as comparing servers.
 
 ## Implementation notes:
 

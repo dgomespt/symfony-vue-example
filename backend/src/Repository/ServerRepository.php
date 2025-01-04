@@ -26,7 +26,7 @@ class ServerRepository implements RepositoryInterface
 
     protected function loadFromFile(): ServerCollection
     {
-        $xls = IOFactory::load($this->storagePath . 'LeaseWeb_servers_filters_assignment.xlsx');
+        $xls = IOFactory::load($this->storagePath . 'servers.xlsx');
         $xls->setActiveSheetIndex(0);
         $rows = $xls->getActiveSheet()->toArray();
 
