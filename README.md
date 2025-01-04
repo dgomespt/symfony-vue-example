@@ -1,4 +1,4 @@
-![example workflow](https://github.com/df3g/symfony-vue-example/actions/workflows/ci.yml/badge.svg)
+![example workflow](https://github.com/dgomespt/symfony-vue-example/actions/workflows/ci.yml/badge.svg)
 
 # About
 Example fullstack application using [Symfony](https://symfony.com/) and [Vue.js](https://vuejs.org/). This was part of a job interview challenge and is not aimed at solving any problem in particular.
