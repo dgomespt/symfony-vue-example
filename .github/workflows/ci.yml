@@ -1,4 +1,4 @@
-name: lw-servers
+name: symfony-vue-example
 
 on: [push]
 
