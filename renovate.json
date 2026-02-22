@@ -1,6 +1,44 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:recommended",
+    ":separateMajorReleases",
+    ":combinePatchMinorReleases",
+    "group:monorepos",
+    "group:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Group all Symfony PHP components together",
+      "matchPackagePatterns": ["^symfony/"],
+      "matchManagers": ["composer"],
+      "groupName": "Symfony Packages"
+    },
+    {
+      "description": "Group Vue and core frontend ecosystem",
+      "matchPackagePatterns": ["^vue", "@vue/.*", "vue-router", "pinia", "vuex"],
+      "matchManagers": ["npm"],
+      "groupName": "Vue Ecosystem"
+    },
+    {
+      "description": "Group all development-related JS tools (ESLint, Prettier, etc)",
+      "matchDepTypes": ["devDependencies"],
+      "matchManagers": ["npm"],
+      "groupName": "Frontend Dev Tools",
+      "automerge": true
+    },
+    {
+      "description": "Group PHP testing and dev tools",
+      "matchPackageNames": ["phpunit/phpunit", "phpstan/phpstan", "vimeo/psalm"],
+      "matchManagers": ["composer"],
+      "groupName": "PHP Quality Tools"
+    },
+    {
+      "description": "Group Docker base image updates",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "Infrastructure Updates"
+    }
+  ],
+  "timezone": "UTC",
+  "schedule": ["before 5am on monday"]
 }
