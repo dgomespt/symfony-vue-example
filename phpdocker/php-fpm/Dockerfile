@@ -1,15 +1,6 @@
 FROM phpdockerio/php:8.5-fpm
 WORKDIR "/application"
 
-ARG UNAME=www-data
-ARG UGROUP=www-data
-ARG UID=1000
-ARG GID=1001
-RUN usermod  --uid $UID $UNAME
-RUN groupmod --gid $GID $UGROUP
-
-
-
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
         git \

@@ -61,10 +61,10 @@ final class GetServersRequest
     public static function fromRequest(Request $request): GetServersRequest
     {
         return new GetServersRequest(
-            intval($request->get('page', 1)),
-            intval($request->get('itemsPerPage', 50)),
-            $request->get('order', []),
-            $request->get('filters', [])
+            intval($request->query->get('page', 1)),
+            intval($request->query->get('itemsPerPage', 50)),
+            $request->query->get('order', []),
+            $request->query->get('filters', [])
         );
     }
 
