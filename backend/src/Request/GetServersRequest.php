@@ -33,11 +33,11 @@ final class GetServersRequest
 
     #[Collection(
         fields: [
-            'ram' => new Choice(['asc', 'desc']),
-            'price' => new Choice(['asc', 'desc']),
-            'model' => new Choice(['asc', 'desc']),
-            'hdd' => new Choice(['asc', 'desc']),
-            'location' => new Choice(['asc', 'desc']),
+            'ram' => new Choice(choices: ['asc', 'desc']),
+            'price' => new Choice(choices: ['asc', 'desc']),
+            'model' => new Choice(choices: ['asc', 'desc']),
+            'hdd' => new Choice(choices: ['asc', 'desc']),
+            'location' => new Choice(choices: ['asc', 'desc']),
         ],
         allowMissingFields: true,
         extraFieldsMessage: 'Allowed keys are (ram, price, model, hdd, location) and values are (asc, desc)'
@@ -63,8 +63,8 @@ final class GetServersRequest
         return new GetServersRequest(
             intval($request->query->get('page', 1)),
             intval($request->query->get('itemsPerPage', 50)),
-            $request->query->get('order', []),
-            $request->query->get('filters', [])
+            $request->query->all('order'),
+            $request->query->all('filters')
         );
     }
 
